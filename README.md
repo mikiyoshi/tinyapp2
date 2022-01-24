@@ -11,3 +11,9 @@ npm install express
 ```
 npm install ejs
 ```
+
+## Install body-parser
+
+```
+npm install body-parser
+```
