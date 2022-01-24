@@ -70,6 +70,16 @@ app.get('/urls/:shortURL', (req, res) => {
   res.render('urls_show', templateVars);
 });
 
+//
+// DELITE
+//
+app.post('/urls/:shortURL/delete', (req, res) => {
+  const shortURLDelete = req.params.shortURL;
+
+  delete urlDatabase[shortURLDelete];
+  res.redirect(`/urls`);
+});
+
 // Redirect any request to longURL
 app.get('/u/:shortURL', (req, res) => {
   // const longURL = ...
