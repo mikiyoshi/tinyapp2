@@ -100,7 +100,7 @@ app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
-
+// feature/cookies
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
