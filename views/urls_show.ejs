@@ -24,15 +24,16 @@
       </div>
       <div class="card-footer text-muted">
         <h3>Edit</h3>
-        <form action="/urls" method="POST">
+        <form action="/urls/<%= shortURL %>" method="POST">
           <div class="form-group">
             <label for="exampleInputEmail1">Edit URL:</label>
             <input
               class="form-control"
               type="text"
-              name="longURL"
+              name="newLongURL"
               value="<%= longURL %>"
             />
+            <!-- longURL edit to name="newLongURL" -->
           </div>
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>

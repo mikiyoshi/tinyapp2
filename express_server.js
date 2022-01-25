@@ -47,6 +47,7 @@ app.post('/urls', (req, res) => {
   // res.send('Ok'); // Respond with 'Ok' (we will replace this)
   let shortU = generateRandomString();
   urlDatabase[shortU] = req.body.longURL;
+  // longURL is urls_new.ejs from input form name="longURL"
   res.redirect(`/urls/${shortU}`);
 });
 
@@ -78,6 +79,19 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
   delete urlDatabase[shortURLDelete];
   res.redirect(`/urls`);
+});
+
+//
+// EDIT
+//
+app.post('/urls/:id', (req, res) => {
+  let shortURL = req.params.id;
+  console.log(req.body);
+  console.log(req.body.newLongURL);
+  let newLongURL = req.body.newLongURL;
+  urlDatabase[shortURL] = newLongURL;
+  // newLongURL is urls_show.ejs from input form name="newLongURL"
+  res.redirect('/urls');
 });
 
 // Redirect any request to longURL
