@@ -39,7 +39,7 @@ npm install --save-dev nodemon
 }
 ```
 
-### test command within pacage.json
+### test command with updated pacage.json
 
 ```
 npm start
