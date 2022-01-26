@@ -24,23 +24,21 @@
         </ul>
       </div>
 
-      <% if(!username){ %>
+      <% if(!user){ %>
       <div class="collapse navbar-collapse" id="navbarText"></div>
-      <form class="form-inline" action="/login" method="POST">
-        <div class="form-group mb-2">
-          <input
-            class="form-control mx-2"
-            type="text"
-            name="username"
-            placeholder="your username"
-          />
-          <button type="submit" class="btn btn-outline-dark">Login</button>
-        </div>
-      </form>
+
+      <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
+        <li class="nav-item mx-2">
+          <a class="btn btn-outline-dark" href="/register">Register</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-dark" href="/login">Login</a>
+        </li>
+      </ul>
       <% } else { %>
       <div class="collapse navbar-collapse" id="navbarText"></div>
       <span class="navbar-text text-dark mr-3">
-        Logged in As: <%= username %>
+        Logged in As: <%= user.email %>
       </span>
       <form class="form-inline my-2 my-lg-0" method="POST" action="/logout">
         <button type="submit" class="btn btn-outline-dark my-2 my-sm-0">

@@ -24,13 +24,13 @@ npm install body-parser
 npm install --save-dev nodemon
 ```
 
-### test in terminal
+### Nodemon test in terminal
 
 ```
 ./node_modules/.bin/nodemon -L express_server.js
 ```
 
-### or update at pacage.json
+### Nodemon test short code in pacage.json
 
 ```
 "scripts": {
@@ -39,7 +39,7 @@ npm install --save-dev nodemon
 }
 ```
 
-### test command with updated pacage.json
+### Nodemon test short command
 
 ```
 npm start
@@ -49,4 +49,10 @@ npm start
 
 ```
 npm install cookie-parser
+```
+
+## Install Morgan
+
+```
+npm install morgan
 ```

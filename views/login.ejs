@@ -15,17 +15,18 @@
       crossorigin="anonymous"
     />
 
-    <title>Register - TinyApp</title>
+    <title>Login - TinyApp Example</title>
   </head>
 
   <body>
     <%- include('partials/_header') %>
+
     <main style="margin: 1em">
-      <h3>Register TinyApp</h3>
+      <h3>Login TinyURL</h3>
       <div class="container">
         <div class="row justify-content-md-center">
           <div class="col-sm-6">
-            <form action="/register" method="POST">
+            <form action="/login" method="POST">
               <div class="form-group">
                 <label for="exampleInputEmail1">Email address</label>
                 <input
@@ -45,7 +46,7 @@
                 />
               </div>
               <button type="submit" class="btn btn-primary btn-block">
-                Register
+                Login
               </button>
             </form>
           </div>
