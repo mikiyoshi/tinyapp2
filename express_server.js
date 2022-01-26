@@ -11,7 +11,7 @@ app.set('view engine', 'ejs'); // npm install ejs
 //  MIDDLEWARE
 //
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser()); // set up cookie-parser
 
 const urlDatabase = {
   b2xVn2: 'http://www.lighthouselabs.ca',
@@ -144,6 +144,10 @@ app.post('/urls/:id', (req, res) => {
 //
 app.post('/login', (req, res) => {
   let newUserName = req.body.username;
+  // console.log(req.cookies.username);
+  //
+  res.cookie('username', newUserName);
+  // set server username as a cookie
   const templateVars = {
     username: newUserName,
     urls: urlDatabase,
