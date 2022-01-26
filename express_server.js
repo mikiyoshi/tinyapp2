@@ -29,7 +29,8 @@ function generateRandomString() {
 // GET /
 //
 app.get('/', (req, res) => {
-  res.send('Hello!');
+  // res.send('Hello!');
+  res.redirect(`/urls`);
 });
 
 app.get('/urls.json', (req, res) => {
@@ -54,6 +55,7 @@ app.get('/urls', (req, res) => {
     urls: urlDatabase,
   };
   res.render('urls_index', templateVars);
+  // res.render is views/urls_index.ejs page template
 });
 
 //
@@ -68,6 +70,7 @@ app.get('/urls/new', (req, res) => {
     username: req.cookies['username'],
   };
   res.render('urls_new', templateVars);
+  // res.render is views/urls_new.ejs page template
 });
 
 //
@@ -84,6 +87,7 @@ app.get('/urls/:shortURL', (req, res) => {
     /* What goes here? */
   };
   res.render('urls_show', templateVars);
+  // res.render is views/urls_show.ejs page template
 });
 //
 // DELITE
@@ -138,6 +142,15 @@ app.post('/urls/:id', (req, res) => {
 //
 // GET /register
 //
+app.get('/register', (req, res) => {
+  const templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL],
+    username: req.cookies['username'],
+  };
+  res.render('register', templateVars);
+  // res.render is views/register.ejs page template
+});
 
 //
 // POST /login
