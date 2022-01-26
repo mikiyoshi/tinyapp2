@@ -44,3 +44,9 @@ npm install --save-dev nodemon
 ```
 npm start
 ```
+
+## Install cookie-parser
+
+```
+npm install cookie-parser
+```
