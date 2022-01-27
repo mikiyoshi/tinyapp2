@@ -97,7 +97,16 @@ app.get('/', (req, res) => {
   // res.end(req.session.user_id + ' user_id');
   // test cookie-session end
   // res.send('Hello!');
-  res.redirect(`/urls`);
+  let cookieUser = req.session['user_id'];
+  if (!cookieUser) {
+    res.redirect(`/login`);
+  }
+  const templateVars = {
+    user_id: cookieUser,
+    user: users[cookieUser],
+    urls: urlDatabase,
+  };
+  res.render('urls_index', templateVars);
 });
 //
 // GET DB by json // u can check your current data in Browser
@@ -178,6 +187,15 @@ app.get('/urls/:shortURL', (req, res) => {
   console.log('GET shortURLshortURL: ', req.params.shortURL);
   console.log('GET shortURLlongURL: ', urlDatabase[req.params.shortURL]);
   // shortURL is like a call back function(shortURL){ shortURL()}
+  if (!cookieUser) {
+    res.redirect(`/login`);
+  }
+  console.log('GET shortURL: ', Object.keys(urlDatabase));
+  let shortDatabase = Object.keys(urlDatabase);
+  let shortURL = req.params.shortURL;
+  if (!shortDatabase.includes(shortURL)) {
+    return res.status(400).send('This URL does not exist');
+  }
   const templateVars = {
     shortURL: req.params.shortURL,
     // req.params.shortURL is :shortURL from app.get('/urls/:shortURL'
@@ -194,9 +212,20 @@ app.get('/urls/:shortURL', (req, res) => {
 // DELITE
 //
 app.post('/urls/:shortURL/delete', (req, res) => {
-  const shortURLDelete = req.params.shortURL;
-
-  delete urlDatabase[shortURLDelete];
+  let cookieUser = req.session['user_id'];
+  if (!cookieUser) {
+    res.redirect(`/login`);
+  }
+  console.log('GET shortURL: ', Object.keys(urlDatabase));
+  let shortDatabase = Object.keys(urlDatabase);
+  let shortURL = req.params.shortURL;
+  if (!shortDatabase.includes(shortURL)) {
+    return res.status(400).send('This URL can not delete');
+  }
+  delete urlDatabase[shortURL];
+  // let shortURLDelete = req.params.shortURL;
+  // delete urlDatabase[shortURLDelete];
+  // update for requirement
   res.redirect(`/urls`);
 });
 
@@ -205,6 +234,16 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 //
 // Redirect any request to longURL
 app.get('/u/:shortURL', (req, res) => {
+  let cookieUser = req.session['user_id'];
+  if (!cookieUser) {
+    res.redirect(`/login`);
+  }
+  console.log('GET shortURL: ', Object.keys(urlDatabase));
+  let shortDatabase = Object.keys(urlDatabase);
+  let shortURL = req.params.shortURL;
+  if (!shortDatabase.includes(shortURL)) {
+    return res.status(400).send('This URL does not exist longURL');
+  }
   // const longURL = ...
   const longURL = urlDatabase[req.params.shortURL].longURL;
   // req.params.shortURL is app.get('/u/:shortURL'
@@ -343,7 +382,7 @@ app.post('/register', (req, res) => {
   let hashedPassword = bcrypt.hashSync(registerPassword, 10);
   // security for password
 
-  if (!registerEmail || !hashedPassword) {
+  if (!registerEmail || !registerPassword) {
     return res.status(400).send('email and password cannot be blank');
   }
   const user = findUserByEmail(registerEmail, users);
