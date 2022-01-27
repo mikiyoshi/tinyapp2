@@ -15,9 +15,21 @@ app.use(bodyParser.urlencoded({ extended: false })); // this is a req.body from 
 app.use(cookieParser()); // set up cookie-parser
 
 // My URLs DB
+// const urlDatabase = {
+//   b2xVn2: 'http://www.lighthouselabs.ca',
+//   '9sm5xK': 'http://www.google.com',
+// };
+//
+// URLs Belong to Users
 const urlDatabase = {
-  b2xVn2: 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://www.google.com',
+  b6UTxQ: {
+    longURL: 'https://www.tsn.ca',
+    userID: 'aJ48lW',
+  },
+  i3BoGr: {
+    longURL: 'https://www.google.ca',
+    userID: 'aJ48lW',
+  },
 };
 
 // User DB
@@ -32,8 +44,8 @@ const users = {
     email: 'user2@example.com',
     password: 'dishwasher-funk',
   },
-  abcd: {
-    id: 'abcd',
+  aJ48lW: {
+    id: 'aJ48lW',
     email: 'a@example.com',
     password: '1234',
   },
@@ -80,16 +92,16 @@ app.get('/urls.json', (req, res) => {
 //
 // Cookies in Express
 app.get('/urls', (req, res) => {
-  const cookieUser = req.cookies['user_id'];
+  let cookieUser = req.cookies['user_id'];
   // console.log('GET ID: ', cookieUser);
   // console.log('GET email: ', users[cookieUser];
   const templateVars = {
     user_id: cookieUser,
     // email: users[cookieUser].email, // error
     user: users[cookieUser],
-    shortURL: req.params.shortURL,
+    // shortURL: req.params.shortURL,
     // req.params.shortURL is app.get('/login'
-    longURL: urlDatabase[req.params.shortURL],
+    // longURL: urlDatabase[req.params.shortURL],
     urls: urlDatabase,
   };
   // const templateVars = {
@@ -108,11 +120,14 @@ app.get('/urls', (req, res) => {
 // 1:/urls/new
 // 2:/urls/:shortURL
 app.get('/urls/new', (req, res) => {
-  const cookieUser = req.cookies['user_id'];
-  console.log('GET ID: ', cookieUser);
-  console.log('GET email: ', users[cookieUser]);
+  let cookieUser = req.cookies['user_id'];
+  console.log('GET newID: ', cookieUser);
+  console.log('GET newemail: ', users[cookieUser]);
+  if (!cookieUser) {
+    res.redirect('/login');
+  }
   const templateVars = {
-    user_id: cookieUser,
+    // user_id: cookieUser,
     // email: users[cookieUser].email, // error
     user: users[cookieUser],
     urls: urlDatabase,
@@ -127,14 +142,16 @@ app.get('/urls/new', (req, res) => {
 // short URL page set up
 // https://expressjs.com/en/guide/routing.html#route-parameters  Object parameter set up
 app.get('/urls/:shortURL', (req, res) => {
-  const cookieUser = req.cookies['user_id'];
-  console.log('GET ID: ', cookieUser);
-  console.log('GET email: ', users[cookieUser]);
+  let cookieUser = req.cookies['user_id'];
+  // console.log('GET shortURLID: ', cookieUser);
+  // console.log('GET shortURLemail: ', users[cookieUser]);
+  console.log('GET shortURLshortURL: ', req.params.shortURL);
+  console.log('GET shortURLlongURL: ', urlDatabase[req.params.shortURL]);
   // shortURL is like a call back function(shortURL){ shortURL()}
   const templateVars = {
     shortURL: req.params.shortURL,
     // req.params.shortURL is :shortURL from app.get('/urls/:shortURL'
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL].longURL,
     /* What goes here? */
     user_id: cookieUser,
     // email: users[cookieUser].email, // error
@@ -159,7 +176,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 // Redirect any request to longURL
 app.get('/u/:shortURL', (req, res) => {
   // const longURL = ...
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   // req.params.shortURL is app.get('/u/:shortURL'
   res.redirect(longURL);
 });
@@ -168,10 +185,16 @@ app.get('/u/:shortURL', (req, res) => {
 // POST /urls
 //
 app.post('/urls', (req, res) => {
+  let cookieUser = req.cookies['user_id'];
   // console.log(req.body); // Log the POST request body to the console
   // res.send('Ok'); // Respond with 'Ok' (we will replace this)
   let shortU = generateRandomString();
-  urlDatabase[shortU] = req.body.longURL;
+  urlDatabase[shortU] = {
+    longURL: req.body.longURL,
+    userID: cookieUser,
+  };
+  console.log('POST urls', urlDatabase);
+  console.log('POST urls', urlDatabase[shortU]);
   // longURL is urls_new.ejs from input form name="longURL"
   res.redirect(`/urls/${shortU}`);
 });
@@ -180,22 +203,27 @@ app.post('/urls', (req, res) => {
 // POST /urls/:id
 //
 // EDIT
-app.post('/urls/:id', (req, res) => {
-  let shortURL = req.params.id;
+app.post('/urls/:shortURL', (req, res) => {
+  let shortURL = req.params.shortURL;
   // req.params.id is app.post('/urls/:id'
-  console.log(req.body);
-  console.log(req.body.newLongURL);
+  console.log('after newURL', req.body);
+  console.log('after newLongURL', req.body.newLongURL);
   let newLongURL = req.body.newLongURL;
-  urlDatabase[shortURL] = newLongURL;
+  // urlDatabase[shortURL] = newLongURL;
   // newLongURL is urls_show.ejs from input form name="newLongURL"
-  res.redirect('/urls');
+  if (newLongURL) {
+    urlDatabase[shortURL].longURL = newLongURL;
+    res.redirect('/urls');
+  } else {
+    res.send('No URL entered');
+  }
 });
 
 //
 // GET /login
 //
 app.get('/login', (req, res) => {
-  const cookieUser = req.cookies['user_id'];
+  let cookieUser = req.cookies['user_id'];
   const templateVars = {
     shortURL: req.params.shortURL,
     // req.params.shortURL is app.get('/login'
@@ -211,7 +239,7 @@ app.get('/login', (req, res) => {
 // GET /register
 //
 app.get('/register', (req, res) => {
-  const cookieUser = req.cookies['user_id'];
+  let cookieUser = req.cookies['user_id'];
   const templateVars = {
     shortURL: req.params.shortURL,
     // req.params.shortURL is app.get('/register'
@@ -227,7 +255,7 @@ app.get('/register', (req, res) => {
 // POST /login
 //
 app.post('/login', (req, res) => {
-  const cookieUser = req.cookies['user_id'];
+  let cookieUser = req.cookies['user_id'];
   // let newUserName = req.body.username;
   // console.log(req.cookies.username);
   let loginEmail = req.body.email;
@@ -268,7 +296,7 @@ app.post('/login', (req, res) => {
 // res.render('home', {cookies: req.cookies})
 //
 app.post('/register', (req, res) => {
-  const cookieUser = req.cookies['user_id'];
+  let cookieUser = req.cookies['user_id'];
   let registerId = generateRandomString();
   let registerEmail = req.body.email;
   let registerPassword = req.body.password;
