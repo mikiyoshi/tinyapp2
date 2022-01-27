@@ -6,6 +6,7 @@ const bodyParser = require('body-parser'); // npm install body-parser
 const cookieParser = require('cookie-parser'); // npm install cookie-parser
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(express.urlencoded({ extended: false })); // this is a req.body from each page form value
+const bcrypt = require('bcryptjs'); // security for password
 
 app.set('view engine', 'ejs'); // npm install ejs
 //
@@ -37,19 +38,20 @@ const users = {
   userRandomID: {
     id: 'userRandomID',
     email: 'user@example.com',
-    password: 'purple-monkey-dinosaur',
+    password: '$2a$10$/0hDdrw4rAIfAjDtzWYkm.lcKLHymZijUrDNMbMQRpRpMj/RArhsi',
   },
   user2RandomID: {
     id: 'user2RandomID',
     email: 'user2@example.com',
-    password: 'dishwasher-funk',
+    password: '$2a$10$js/2aVKSwvLs7O0.ax3H/uA6xb.x4TjPQkyRPhw6IX7BJoJpcPLtm',
   },
   aJ48lW: {
     id: 'aJ48lW',
     email: 'a@example.com',
-    password: '1234',
+    password: '$2a$10$1XI/g2nZH/R2ix3xDtMwQOW2e7nKWShvjshOcXCBMZmEamCfK.rkG',
   },
 };
+
 // new user can't use same email in our current users
 const findUserByEmail = (email) => {
   for (const userId in users) {
@@ -260,6 +262,7 @@ app.post('/login', (req, res) => {
   // console.log(req.cookies.username);
   let loginEmail = req.body.email;
   let loginPassword = req.body.password;
+  // let hashedPassword = bcrypt.hashSync(loginPassword, 10);
   //
   if (!loginEmail || !loginPassword) {
     return res.status(400).send('email and password cannot be blank');
@@ -270,7 +273,14 @@ app.post('/login', (req, res) => {
     // findUserByEmail() is null
     return res.status(400).send('a user with that email does not exist');
   }
-  if (user.password !== loginPassword) {
+  // if (user.password !== loginPassword) {
+
+  console.log(
+    'POST loginPassword: ',
+    bcrypt.compareSync(loginPassword, user.password)
+  );
+  console.log('POST loginUserPassword: ', user.password);
+  if (!bcrypt.compareSync(loginPassword, user.password)) {
     return res.status(400).send('password does not match');
   }
   let loginId = user.id;
@@ -300,8 +310,9 @@ app.post('/register', (req, res) => {
   let registerId = generateRandomString();
   let registerEmail = req.body.email;
   let registerPassword = req.body.password;
+  let hashedPassword = bcrypt.hashSync(registerPassword, 10);
 
-  if (!registerEmail || !registerPassword) {
+  if (!registerEmail || !hashedPassword) {
     return res.status(400).send('email and password cannot be blank');
   }
   const user = findUserByEmail(registerEmail);
@@ -315,7 +326,7 @@ app.post('/register', (req, res) => {
     // add new user at users DB
     id: registerId,
     email: registerEmail,
-    password: registerPassword,
+    password: hashedPassword,
   };
   console.log('Add new user in DB', users);
   const templateVars = {

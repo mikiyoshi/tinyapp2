@@ -56,3 +56,9 @@ npm install cookie-parser
 ```
 npm install morgan
 ```
+
+## Install bcrypt
+
+```
+npm install bcryptjs
+```
