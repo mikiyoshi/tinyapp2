@@ -9,6 +9,8 @@ const cookieSession = require('cookie-session'); // npm install cookie-session
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(express.urlencoded({ extended: false })); // this is a req.body from each page form value
 const bcrypt = require('bcryptjs'); // security for password
+const { findUserByEmail } = require('./helpers.js'); // Mocha and Chai test
+// const { getUserByEmail, accessCheck } = require('./helpers.js'); // Mocha and Chai test
 
 app.set('view engine', 'ejs'); // npm install ejs
 //
@@ -67,15 +69,16 @@ const users = {
 };
 
 // new user can't use same email in our current users
-const findUserByEmail = (email) => {
-  for (const userId in users) {
-    const user = users[userId];
-    if (user.email === email) {
-      return user;
-    }
-  }
-  return null;
-};
+// const findUserByEmail = (email) => {
+// Refactor Helper Functions as findUserByEmail() in helper.js
+//   for (const userId in users) {
+//     const user = users[userId];
+//     if (user.email === email) {
+//       return user;
+//     }
+//   }
+//   return null;
+// };
 // global scope
 function generateRandomString() {
   var random = Math.random().toString(36).slice(7);
@@ -292,7 +295,7 @@ app.post('/login', (req, res) => {
   if (!loginEmail || !loginPassword) {
     return res.status(400).send('email and password cannot be blank');
   }
-  const user = findUserByEmail(loginEmail);
+  const user = findUserByEmail(loginEmail, users);
   console.log('check users DB', user);
   if (!user) {
     // findUserByEmail() is null
@@ -343,7 +346,7 @@ app.post('/register', (req, res) => {
   if (!registerEmail || !hashedPassword) {
     return res.status(400).send('email and password cannot be blank');
   }
-  const user = findUserByEmail(registerEmail);
+  const user = findUserByEmail(registerEmail, users);
   console.log('check DB', users);
   console.log('check email DB', user);
   if (user) {

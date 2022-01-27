@@ -82,3 +82,22 @@ npm i uuid -g
 ```
 uuid
 ```
+
+## Install Mocha and Chai
+
+```
+npm install mocha chai --save-dev
+```
+
+### Mocha and Chai test short code in pacage.json
+
+```
+"scripts": {
+  "test": "./node_modules/mocha/bin/mocha"
+
+}
+```
+
+```
+npm test
+```
