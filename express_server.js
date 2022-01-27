@@ -3,7 +3,9 @@ const app = express();
 const PORT = 8080; // default port 8080
 
 const bodyParser = require('body-parser'); // npm install body-parser
-const cookieParser = require('cookie-parser'); // npm install cookie-parser
+// const cookieParser = require('cookie-parser'); // npm install cookie-parser
+// cookie-parser replace to cookie-session
+const cookieSession = require('cookie-session'); // npm install cookie-session
 // app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(express.urlencoded({ extended: false })); // this is a req.body from each page form value
 const bcrypt = require('bcryptjs'); // security for password
@@ -13,7 +15,19 @@ app.set('view engine', 'ejs'); // npm install ejs
 //  MIDDLEWARE
 //
 app.use(bodyParser.urlencoded({ extended: false })); // this is a req.body from each page form value
-app.use(cookieParser()); // set up cookie-parser
+// app.use(cookieParser()); // set up cookie-parser
+// cookie-parser replace to cookie-session
+app.set('trust proxy', 1); // trust first proxy
+
+app.use(
+  cookieSession({
+    name: 'session',
+    keys: [
+      '40767e34-50b6-489e-81dd-d3883d695663',
+      'f62a8200-3854-4f51-81ee-a27ce4d2c01f',
+    ],
+  })
+); // set up cookie-session
 
 // My URLs DB
 // const urlDatabase = {
@@ -73,12 +87,23 @@ function generateRandomString() {
 // GET /
 //
 app.get('/', (req, res) => {
+  // test cookie-session start
+  // req.session.user_id = (req.session.user_id || 0) + 1;
+
+  // Write response
+  // res.end(req.session.user_id + ' user_id');
+  // test cookie-session end
   // res.send('Hello!');
   res.redirect(`/urls`);
 });
-
+//
+// GET DB by json // u can check your current data in Browser
+//
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
+});
+app.get('/users.json', (req, res) => {
+  res.json(users);
 });
 
 // app.get('/hello', (req, res) => {
@@ -94,7 +119,7 @@ app.get('/urls.json', (req, res) => {
 //
 // Cookies in Express
 app.get('/urls', (req, res) => {
-  let cookieUser = req.cookies['user_id'];
+  let cookieUser = req.session['user_id'];
   // console.log('GET ID: ', cookieUser);
   // console.log('GET email: ', users[cookieUser];
   const templateVars = {
@@ -107,7 +132,7 @@ app.get('/urls', (req, res) => {
     urls: urlDatabase,
   };
   // const templateVars = {
-  //   user_id: req.cookies['user_id'],
+  //   user_id: req.session['user_id'],
   //   urls: urlDatabase,
   // };
   res.render('urls_index', templateVars);
@@ -122,7 +147,7 @@ app.get('/urls', (req, res) => {
 // 1:/urls/new
 // 2:/urls/:shortURL
 app.get('/urls/new', (req, res) => {
-  let cookieUser = req.cookies['user_id'];
+  let cookieUser = req.session['user_id'];
   console.log('GET newID: ', cookieUser);
   console.log('GET newemail: ', users[cookieUser]);
   if (!cookieUser) {
@@ -144,7 +169,7 @@ app.get('/urls/new', (req, res) => {
 // short URL page set up
 // https://expressjs.com/en/guide/routing.html#route-parameters  Object parameter set up
 app.get('/urls/:shortURL', (req, res) => {
-  let cookieUser = req.cookies['user_id'];
+  let cookieUser = req.session['user_id'];
   // console.log('GET shortURLID: ', cookieUser);
   // console.log('GET shortURLemail: ', users[cookieUser]);
   console.log('GET shortURLshortURL: ', req.params.shortURL);
@@ -187,7 +212,7 @@ app.get('/u/:shortURL', (req, res) => {
 // POST /urls
 //
 app.post('/urls', (req, res) => {
-  let cookieUser = req.cookies['user_id'];
+  let cookieUser = req.session['user_id'];
   // console.log(req.body); // Log the POST request body to the console
   // res.send('Ok'); // Respond with 'Ok' (we will replace this)
   let shortU = generateRandomString();
@@ -225,12 +250,12 @@ app.post('/urls/:shortURL', (req, res) => {
 // GET /login
 //
 app.get('/login', (req, res) => {
-  let cookieUser = req.cookies['user_id'];
+  let cookieUser = req.session['user_id'];
   const templateVars = {
     shortURL: req.params.shortURL,
     // req.params.shortURL is app.get('/login'
     longURL: urlDatabase[req.params.shortURL],
-    // user_id: req.cookies['user_id'],
+    // user_id: req.session['user_id'],
     user: users[cookieUser],
   };
   res.render('login', templateVars);
@@ -241,12 +266,12 @@ app.get('/login', (req, res) => {
 // GET /register
 //
 app.get('/register', (req, res) => {
-  let cookieUser = req.cookies['user_id'];
+  let cookieUser = req.session['user_id'];
   const templateVars = {
     shortURL: req.params.shortURL,
     // req.params.shortURL is app.get('/register'
     longURL: urlDatabase[req.params.shortURL],
-    // user_id: req.cookies['user_id'],
+    // user_id: req.session['user_id'],
     user: users[cookieUser],
   };
   res.render('register', templateVars);
@@ -257,9 +282,9 @@ app.get('/register', (req, res) => {
 // POST /login
 //
 app.post('/login', (req, res) => {
-  let cookieUser = req.cookies['user_id'];
+  let cookieUser = req.session['user_id'];
   // let newUserName = req.body.username;
-  // console.log(req.cookies.username);
+  // console.log(req.session.username);
   let loginEmail = req.body.email;
   let loginPassword = req.body.password;
   // let hashedPassword = bcrypt.hashSync(loginPassword, 10);
@@ -286,7 +311,8 @@ app.post('/login', (req, res) => {
   }
   let loginId = user.id;
   console.log('check login ID', loginId);
-  res.cookie('user_id', loginId);
+  // res.cookie('user_id', loginId);
+  req.session['user_id'] = loginId; // storing the user id value with cookie session
   // set server username as a cookie
   // const templateVars = {
   //   user_id: newUserName,
@@ -304,10 +330,10 @@ app.post('/login', (req, res) => {
 
 //
 // POST /register
-// res.render('home', {cookies: req.cookies})
+// res.render('home', {cookies: req.session})
 //
 app.post('/register', (req, res) => {
-  let cookieUser = req.cookies['user_id'];
+  let cookieUser = req.session['user_id'];
   let registerId = generateRandomString();
   let registerEmail = req.body.email;
   let registerPassword = req.body.password;
@@ -337,7 +363,8 @@ app.post('/register', (req, res) => {
     email: registerEmail,
     urls: urlDatabase,
   };
-  res.cookie('user_id', registerId);
+  // res.cookie('user_id', registerId);
+  req.session['user_id'] = registerId; // storing the user id value with cookie session
   // set server username as a cookie
   res.redirect('/urls');
   // ERROR res.redirect can't has 2nd value of templateVars
@@ -348,7 +375,16 @@ app.post('/register', (req, res) => {
 // POST /logout
 //
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id');
+  // res.clearCookie('user_id');
+  req.session['user_id'] = null;
+  // there is a cookie session in your Browser Developer tool of Network, But it's OK.
+  // Cos when u login change session, then logout change it too.
+  // app.use(
+  //   cookieSession({
+  //     name: 'session',
+  //     keys: [
+  //       '40767e34-50b6-489e-81dd-d3883d695663', // Maybe this uuid after logout session as random key
+  //       'f62a8200-3854-4f51-81ee-a27ce4d2c01f', // Maybe this uuid after logout session as random key
   res.redirect('/urls');
 });
 

@@ -62,3 +62,23 @@ npm install morgan
 ```
 npm install bcryptjs
 ```
+
+## Install cookie-session
+
+```
+npm install cookie-session
+```
+
+### if you don't have uuid key for cookie-session key
+
+- uuid can make random keyword
+
+```
+npm i uuid -g
+```
+
+- You can make a random keyword
+
+```
+uuid
+```
