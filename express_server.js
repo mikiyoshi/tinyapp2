@@ -259,7 +259,8 @@ app.post('/login', (req, res) => {
     email: loginEmail,
     urls: urlDatabase,
   };
-  res.render('login', templateVars);
+  res.redirect('/urls');
+  // res.render('login', templateVars);
 });
 
 //
@@ -297,9 +298,9 @@ app.post('/register', (req, res) => {
   };
   res.cookie('user_id', registerId);
   // set server username as a cookie
-  // res.redirect('/urls', templateVars);
+  res.redirect('/urls');
   // ERROR res.redirect can't has 2nd value of templateVars
-  res.render('urls_index', templateVars);
+  // res.render('urls_index', templateVars);
 });
 
 //
