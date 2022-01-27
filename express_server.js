@@ -275,12 +275,13 @@ app.post('/login', (req, res) => {
   }
   // if (user.password !== loginPassword) {
 
-  console.log(
-    'POST loginPassword: ',
-    bcrypt.compareSync(loginPassword, user.password)
-  );
+  // console.log(
+  //   'POST loginPassword: ',
+  //   bcrypt.compareSync(loginPassword, user.password)
+  // );
   console.log('POST loginUserPassword: ', user.password);
   if (!bcrypt.compareSync(loginPassword, user.password)) {
+    // password check bcrypt.compareSync() // true password match, false password not match
     return res.status(400).send('password does not match');
   }
   let loginId = user.id;
@@ -311,6 +312,7 @@ app.post('/register', (req, res) => {
   let registerEmail = req.body.email;
   let registerPassword = req.body.password;
   let hashedPassword = bcrypt.hashSync(registerPassword, 10);
+  // security for password
 
   if (!registerEmail || !hashedPassword) {
     return res.status(400).send('email and password cannot be blank');
