@@ -20,6 +20,16 @@
     <%- include('partials/_header') %>
     <main style="margin: 1em">
       <h3>My URLs</h3>
+      <% if(!user){ %>
+      <div class="container">
+        <div class="row justify-content-md-center">
+          <div class="col-sm-6">
+            <div class="alert alert-danger" role="alert">Please Login</div>
+            <a class="btn btn-primary btn-block" href="/login">Login</a>
+          </div>
+        </div>
+      </div>
+      <% } else { %>
       <table class="table">
         <thead>
           <tr>
@@ -31,11 +41,11 @@
         </thead>
         <tbody>
           <% for(let url in urls) { %>
+          <!-- this is from templateVars urls: urlDatabase -->
+          <% if(urls[url].userID === user_id){ %>
           <tr>
             <td><a href="/u/<%= url %>"><%= url %></a></td>
             <td><%= urls[url].longURL %></td>
-            <!-- this is from templateVars urls: urlDatabase -->
-            <% if(urls[url].userID === user_id){ %>
             <td>
               <form method="GET" action="/urls/<%= url %>">
                 <button type="submit" class="btn btn-outline-primary">
@@ -50,22 +60,11 @@
                 </button>
               </form>
             </td>
-            <% } else { %>
-            <td>
-              <button type="button" class="btn btn-outline-primary" disabled>
-                Edit
-              </button>
-            </td>
-            <td>
-              <button type="button" class="btn btn-outline-danger" disabled>
-                Delete
-              </button>
-            </td>
-            <% } %>
           </tr>
-          <% } %>
+          <% } %> <% } %>
         </tbody>
       </table>
+      <% } %>
     </main>
     <!-- Bootstrap JS -->
     <script

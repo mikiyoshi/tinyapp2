@@ -2,12 +2,12 @@ const express = require('express');
 const app = express();
 const PORT = 8080; // default port 8080
 
-const bodyParser = require('body-parser'); // npm install body-parser
-const cookieSession = require('cookie-session'); // npm install cookie-session
+const bodyParser = require('body-parser'); // npm install
+const cookieSession = require('cookie-session'); // npm install
 const bcrypt = require('bcryptjs'); // security for password
 const { findUserByEmail } = require('./helpers.js'); // Mocha and Chai test
 
-app.set('view engine', 'ejs'); // npm install ejs
+app.set('view engine', 'ejs'); // npm install
 //
 //  MIDDLEWARE
 //
@@ -133,7 +133,7 @@ app.get('/urls/:shortURL', (req, res) => {
   console.log('GET shortURLshortURL: ', req.params.shortURL);
   console.log('GET shortURLlongURL: ', urlDatabase[req.params.shortURL]);
   if (!cookieUser) {
-    res.redirect(`/login`);
+    return res.status(400).send('This URL does not exist');
   }
   console.log('GET shortURL: ', Object.keys(urlDatabase));
   let shortDatabase = Object.keys(urlDatabase);
@@ -192,6 +192,10 @@ app.get('/u/:shortURL', (req, res) => {
 app.post('/urls', (req, res) => {
   let cookieUser = req.session['user_id'];
   let shortU = generateRandomString();
+  let newLongURL = req.body.longURL;
+  if (!newLongURL) {
+    return res.status(400).send('A URL cannot be blank');
+  }
   urlDatabase[shortU] = {
     longURL: req.body.longURL,
     userID: cookieUser,
@@ -314,7 +318,6 @@ app.post('/logout', (req, res) => {
 //
 // listen
 //
-// this is always end
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
