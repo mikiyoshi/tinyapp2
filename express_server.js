@@ -87,10 +87,15 @@ app.get('/users.json', (req, res) => {
 // Cookies in Express
 app.get('/urls', (req, res) => {
   let cookieUser = req.session['user_id'];
+  let filteredUserDatabase = Object.fromEntries(
+    Object.entries(urlDatabase).filter(
+      ([key, value]) => value.userID === cookieUser
+    )
+  );
   const templateVars = {
     user_id: cookieUser,
     user: users[cookieUser],
-    urls: urlDatabase,
+    urls: filteredUserDatabase,
   };
   res.render('urls_index', templateVars);
 });
@@ -122,12 +127,12 @@ app.get('/urls/new', (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
   let cookieUser = req.session['user_id'];
   if (!cookieUser) {
-    return res.status(400).send('This URL does not exist');
+    return res.status(400).send('400 - This URL does not exist');
   }
   let shortDatabase = Object.keys(urlDatabase);
   let shortURL = req.params.shortURL;
   if (!shortDatabase.includes(shortURL)) {
-    return res.status(400).send('This URL does not exist');
+    return res.status(400).send('400 - This URL does not exist');
   }
   const templateVars = {
     shortURL: req.params.shortURL,
@@ -148,7 +153,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   let shortDatabase = Object.keys(urlDatabase);
   let shortURL = req.params.shortURL;
   if (!shortDatabase.includes(shortURL)) {
-    return res.status(400).send('This URL can not delete');
+    return res.status(400).send('400 - This URL does not exist and delete');
   }
   delete urlDatabase[shortURL];
   res.redirect(`/urls`);
@@ -166,7 +171,7 @@ app.get('/u/:shortURL', (req, res) => {
   let shortDatabase = Object.keys(urlDatabase);
   let shortURL = req.params.shortURL;
   if (!shortDatabase.includes(shortURL)) {
-    return res.status(400).send('This URL does not exist longURL');
+    return res.status(400).send('400 - This URL does not exist');
   }
   const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
@@ -180,7 +185,7 @@ app.post('/urls', (req, res) => {
   let shortU = generateRandomString();
   let newLongURL = req.body.longURL;
   if (!newLongURL) {
-    return res.status(400).send('A URL cannot be blank');
+    return res.status(400).send('400 - A URL cannot be blank');
   }
   urlDatabase[shortU] = {
     longURL: req.body.longURL,
@@ -237,15 +242,15 @@ app.post('/login', (req, res) => {
   let loginEmail = req.body.email;
   let loginPassword = req.body.password;
   if (!loginEmail || !loginPassword) {
-    return res.status(400).send('email and password cannot be blank');
+    return res.status(400).send('400 - Email and password cannot be blank');
   }
   const user = findUserByEmail(loginEmail, users);
   if (!user) {
-    return res.status(400).send('a user with that email does not exist');
+    return res.status(400).send('400 - A user with that Email does not exist');
   }
   if (!bcrypt.compareSync(loginPassword, user.password)) {
     // password check bcrypt.compareSync() // true password match, false password not match
-    return res.status(400).send('password does not match');
+    return res.status(400).send('400 - password does not match');
   }
   let loginId = user.id;
   req.session['user_id'] = loginId; // storing the user id value with cookie session
@@ -264,11 +269,11 @@ app.post('/register', (req, res) => {
   // security for password
 
   if (!registerEmail || !registerPassword) {
-    return res.status(400).send('email and password cannot be blank');
+    return res.status(400).send('400 - Email and password cannot be blank');
   }
   const user = findUserByEmail(registerEmail, users);
   if (user) {
-    return res.status(400).send('a user with that email already exists');
+    return res.status(400).send('400 - A user with that email already exists');
   }
   users[registerId] = {
     // add new user at users DB

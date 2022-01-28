@@ -29,7 +29,7 @@
           </div>
         </div>
       </div>
-      <% } else { %>
+      <% } else { %> <% if (Object.keys(urls).length !== 0) { %>
       <table class="table">
         <thead>
           <tr>
@@ -64,7 +64,20 @@
           <% } %> <% } %>
         </tbody>
       </table>
-      <% } %>
+      <% } else { %>
+      <div class="container">
+        <div class="row justify-content-md-center">
+          <div class="col-sm-6">
+            <div class="alert alert-danger" role="alert">
+              You don't have short URL
+            </div>
+            <a class="btn btn-primary btn-block" href="/urls/new">
+              Create New URL
+            </a>
+          </div>
+        </div>
+      </div>
+      <% } %> <% } %>
     </main>
     <!-- Bootstrap JS -->
     <script
