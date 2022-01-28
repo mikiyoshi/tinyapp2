@@ -234,7 +234,6 @@ app.get('/register', (req, res) => {
 // POST /login
 //
 app.post('/login', (req, res) => {
-  let cookieUser = req.session['user_id'];
   let loginEmail = req.body.email;
   let loginPassword = req.body.password;
   if (!loginEmail || !loginPassword) {
@@ -258,7 +257,6 @@ app.post('/login', (req, res) => {
 // res.render('home', {cookies: req.session})
 //
 app.post('/register', (req, res) => {
-  let cookieUser = req.session['user_id'];
   let registerId = generateRandomString();
   let registerEmail = req.body.email;
   let registerPassword = req.body.password;
