@@ -101,6 +101,24 @@ app.get('/urls', (req, res) => {
 });
 
 //
+// GET /error
+//
+app.get('/error', (req, res) => {
+  let cookieUser = req.session['user_id'];
+  let filteredUserDatabase = Object.fromEntries(
+    Object.entries(urlDatabase).filter(
+      ([key, value]) => value.userID === cookieUser
+    )
+  );
+  const templateVars = {
+    user_id: cookieUser,
+    user: users[cookieUser],
+    urls: filteredUserDatabase,
+  };
+  res.render('error', templateVars);
+});
+
+//
 // GET /urls/new
 //
 // create short URL form
@@ -127,18 +145,26 @@ app.get('/urls/new', (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
   let cookieUser = req.session['user_id'];
   if (!cookieUser) {
-    return res.status(400).send('400 - This URL does not exist');
+    // return res.status(400).send('400 - This URL does not exist');
+    res.redirect('/error');
   }
+  let filteredUserDatabase = Object.fromEntries(
+    Object.entries(urlDatabase).filter(
+      ([key, value]) => value.userID === cookieUser
+    )
+  );
   let shortDatabase = Object.keys(urlDatabase);
   let shortURL = req.params.shortURL;
   if (!shortDatabase.includes(shortURL)) {
-    return res.status(400).send('400 - This URL does not exist');
+    // return res.status(400).send('400 - This URL does not exist');
+    res.redirect('/error');
   }
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL,
     user_id: cookieUser,
     user: users[cookieUser],
+    urls: filteredUserDatabase,
   };
   res.render('urls_show', templateVars);
 });
@@ -153,7 +179,8 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   let shortDatabase = Object.keys(urlDatabase);
   let shortURL = req.params.shortURL;
   if (!shortDatabase.includes(shortURL)) {
-    return res.status(400).send('400 - This URL does not exist and delete');
+    // return res.status(400).send('400 - This URL does not exist and delete');
+    res.redirect('/error');
   }
   delete urlDatabase[shortURL];
   res.redirect(`/urls`);
@@ -164,14 +191,15 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 //
 // Redirect any request to longURL
 app.get('/u/:shortURL', (req, res) => {
-  let cookieUser = req.session['user_id'];
-  if (!cookieUser) {
-    res.redirect(`/login`);
-  }
+  // let cookieUser = req.session['user_id'];
+  // if (!cookieUser) {
+  //   res.redirect(`/login`);
+  // }
   let shortDatabase = Object.keys(urlDatabase);
   let shortURL = req.params.shortURL;
   if (!shortDatabase.includes(shortURL)) {
-    return res.status(400).send('400 - This URL does not exist');
+    // return res.status(400).send('400 - This URL does not exist');
+    res.redirect('/error');
   }
   const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);

@@ -13,33 +13,51 @@
 
   <body>
     <%- include('partials/_header') %>
-    <div class="card text-center">
-      <div class="card-header text-muted"><h1>Edit URL</h1></div>
-      <div class="card-body">
-        <h5 class="card-title">TinyURL for: <%= longURL %></h5>
-        <p class="card-text">
-          Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a>
-          <!-- /u/shortURL is redirect to longURL -->
-        </p>
+    <main>
+      <% if (Object.keys(urls).length !== 0) { %>
+      <div class="card text-center">
+        <div class="card-header text-muted"><h1>Edit URL</h1></div>
+        <div class="card-body">
+          <h5 class="card-title">TinyURL for: <%= longURL %></h5>
+          <p class="card-text">
+            Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a>
+            <!-- /u/shortURL is redirect to longURL -->
+          </p>
+        </div>
+        <div class="card-footer text-muted">
+          <h3>Edit</h3>
+          <form action="/urls/<%= shortURL %>" method="POST">
+            <div class="form-group">
+              <label for="exampleInputEmail1">Edit URL:</label>
+              <input
+                class="form-control"
+                type="text"
+                name="newLongURL"
+                value="<%= longURL %>"
+              />
+              <!-- longURL edit to name="newLongURL" -->
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+        <div class="card-footer text-muted"></div>
       </div>
-      <div class="card-footer text-muted">
-        <h3>Edit</h3>
-        <form action="/urls/<%= shortURL %>" method="POST">
-          <div class="form-group">
-            <label for="exampleInputEmail1">Edit URL:</label>
-            <input
-              class="form-control"
-              type="text"
-              name="newLongURL"
-              value="<%= longURL %>"
-            />
-            <!-- longURL edit to name="newLongURL" -->
+      <% } else { %>
+      <h3>My URLs</h3>
+      <div class="container">
+        <div class="row justify-content-md-center">
+          <div class="col-sm-6">
+            <div class="alert alert-danger" role="alert">
+              You can't edit URL
+            </div>
+            <a class="btn btn-primary btn-block" href="/urls/new">
+              Create New URL
+            </a>
           </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+        </div>
       </div>
-      <div class="card-footer text-muted"></div>
-    </div>
+      <% } %>
+    </main>
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

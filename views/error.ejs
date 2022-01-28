@@ -22,36 +22,28 @@
     <%- include('partials/_header') %>
 
     <main style="margin: 1em">
-      <h3>Login TinyURL</h3>
+      <h3>Error TinyURL</h3>
+      <% if(!user){ %>
       <div class="container">
         <div class="row justify-content-md-center">
           <div class="col-sm-6">
-            <form action="/login" method="POST">
-              <div class="form-group">
-                <label for="exampleInputEmail1">Email address (required)</label>
-                <input
-                  class="form-control"
-                  type="email"
-                  name="email"
-                  placeholder="xyz@example.com"
-                />
-              </div>
-              <div class="form-group">
-                <label for="exampleInputPassword1">Password (required)</label>
-                <input
-                  class="form-control"
-                  type="password"
-                  name="password"
-                  placeholder="password"
-                />
-              </div>
-              <button type="submit" class="btn btn-primary btn-block">
-                Login
-              </button>
-            </form>
+            <div class="alert alert-danger" role="alert">Please Login</div>
+            <a class="btn btn-primary btn-block" href="/login"> Login </a>
           </div>
         </div>
       </div>
+      <% } else { %>
+      <div class="container">
+        <div class="row justify-content-md-center">
+          <div class="col-sm-6">
+            <div class="alert alert-danger" role="alert">
+              This URL does not exist
+            </div>
+            <a class="btn btn-primary btn-block" href="/login"> Login </a>
+          </div>
+        </div>
+      </div>
+      <% } %>
     </main>
     <!-- Bootstrap JS -->
     <script
