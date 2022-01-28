@@ -145,7 +145,6 @@ app.get('/urls/new', (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
   let cookieUser = req.session['user_id'];
   if (!cookieUser) {
-    // return res.status(400).send('400 - This URL does not exist');
     res.redirect('/error');
   }
   let filteredUserDatabase = Object.fromEntries(
@@ -156,7 +155,6 @@ app.get('/urls/:shortURL', (req, res) => {
   let shortDatabase = Object.keys(urlDatabase);
   let shortURL = req.params.shortURL;
   if (!shortDatabase.includes(shortURL)) {
-    // return res.status(400).send('400 - This URL does not exist');
     res.redirect('/error');
   }
   const templateVars = {
@@ -179,7 +177,6 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   let shortDatabase = Object.keys(urlDatabase);
   let shortURL = req.params.shortURL;
   if (!shortDatabase.includes(shortURL)) {
-    // return res.status(400).send('400 - This URL does not exist and delete');
     res.redirect('/error');
   }
   delete urlDatabase[shortURL];
@@ -191,14 +188,9 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 //
 // Redirect any request to longURL
 app.get('/u/:shortURL', (req, res) => {
-  // let cookieUser = req.session['user_id'];
-  // if (!cookieUser) {
-  //   res.redirect(`/login`);
-  // }
   let shortDatabase = Object.keys(urlDatabase);
   let shortURL = req.params.shortURL;
   if (!shortDatabase.includes(shortURL)) {
-    // return res.status(400).send('400 - This URL does not exist');
     res.redirect('/error');
   }
   const longURL = urlDatabase[req.params.shortURL].longURL;
