@@ -12,4 +12,11 @@ function findUserByEmail(email, users) {
   return null;
 }
 
-module.exports = { findUserByEmail };
+// global scope
+function generateRandomString() {
+  var random = Math.random().toString(36).slice(7);
+  // console.log(random);
+  return random;
+  // cb(random);
+}
+module.exports = { findUserByEmail, generateRandomString };

@@ -5,7 +5,7 @@ const PORT = 8080; // default port 8080
 const bodyParser = require('body-parser'); // npm install
 const cookieSession = require('cookie-session'); // npm install
 const bcrypt = require('bcryptjs'); // security for password
-const { findUserByEmail } = require('./helpers.js'); // Mocha and Chai test
+const { findUserByEmail, generateRandomString } = require('./helpers.js'); // Mocha and Chai test
 
 app.set('view engine', 'ejs'); // npm install
 //
@@ -56,13 +56,6 @@ const users = {
   },
 };
 
-// global scope
-function generateRandomString() {
-  var random = Math.random().toString(36).slice(7);
-  // console.log(random);
-  return random;
-  // cb(random);
-}
 //
 // GET /
 //
