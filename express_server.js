@@ -104,8 +104,6 @@ app.get('/urls', (req, res) => {
 // 2:/urls/:shortURL
 app.get('/urls/new', (req, res) => {
   let cookieUser = req.session['user_id'];
-  console.log('GET newID: ', cookieUser);
-  console.log('GET newemail: ', users[cookieUser]);
   if (!cookieUser) {
     res.redirect('/login');
   }
@@ -123,12 +121,9 @@ app.get('/urls/new', (req, res) => {
 // https://expressjs.com/en/guide/routing.html#route-parameters  Object parameter set up
 app.get('/urls/:shortURL', (req, res) => {
   let cookieUser = req.session['user_id'];
-  console.log('GET shortURLshortURL: ', req.params.shortURL);
-  console.log('GET shortURLlongURL: ', urlDatabase[req.params.shortURL]);
   if (!cookieUser) {
     return res.status(400).send('This URL does not exist');
   }
-  console.log('GET shortURL: ', Object.keys(urlDatabase));
   let shortDatabase = Object.keys(urlDatabase);
   let shortURL = req.params.shortURL;
   if (!shortDatabase.includes(shortURL)) {
@@ -150,7 +145,6 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   if (!cookieUser) {
     res.redirect(`/login`);
   }
-  console.log('GET shortURL: ', Object.keys(urlDatabase));
   let shortDatabase = Object.keys(urlDatabase);
   let shortURL = req.params.shortURL;
   if (!shortDatabase.includes(shortURL)) {
@@ -169,7 +163,6 @@ app.get('/u/:shortURL', (req, res) => {
   if (!cookieUser) {
     res.redirect(`/login`);
   }
-  console.log('GET shortURL: ', Object.keys(urlDatabase));
   let shortDatabase = Object.keys(urlDatabase);
   let shortURL = req.params.shortURL;
   if (!shortDatabase.includes(shortURL)) {
@@ -193,8 +186,6 @@ app.post('/urls', (req, res) => {
     longURL: req.body.longURL,
     userID: cookieUser,
   };
-  console.log('POST urls', urlDatabase);
-  console.log('POST urls', urlDatabase[shortU]);
   res.redirect(`/urls/${shortU}`);
 });
 
@@ -204,8 +195,6 @@ app.post('/urls', (req, res) => {
 // EDIT
 app.post('/urls/:shortURL', (req, res) => {
   let shortURL = req.params.shortURL;
-  console.log('after newURL', req.body);
-  console.log('after newLongURL', req.body.newLongURL);
   let newLongURL = req.body.newLongURL;
   if (newLongURL) {
     urlDatabase[shortURL].longURL = newLongURL;
@@ -252,17 +241,14 @@ app.post('/login', (req, res) => {
     return res.status(400).send('email and password cannot be blank');
   }
   const user = findUserByEmail(loginEmail, users);
-  console.log('check users DB', user);
   if (!user) {
     return res.status(400).send('a user with that email does not exist');
   }
-  console.log('POST loginUserPassword: ', user.password);
   if (!bcrypt.compareSync(loginPassword, user.password)) {
     // password check bcrypt.compareSync() // true password match, false password not match
     return res.status(400).send('password does not match');
   }
   let loginId = user.id;
-  console.log('check login ID', loginId);
   req.session['user_id'] = loginId; // storing the user id value with cookie session
   res.redirect('/urls');
 });
@@ -283,8 +269,6 @@ app.post('/register', (req, res) => {
     return res.status(400).send('email and password cannot be blank');
   }
   const user = findUserByEmail(registerEmail, users);
-  console.log('check DB', users);
-  console.log('check email DB', user);
   if (user) {
     return res.status(400).send('a user with that email already exists');
   }
@@ -294,7 +278,6 @@ app.post('/register', (req, res) => {
     email: registerEmail,
     password: hashedPassword,
   };
-  console.log('Add new user in DB', users);
   req.session['user_id'] = registerId; // storing the user id value with cookie session
   // set server username as a cookie
   res.redirect('/urls');
