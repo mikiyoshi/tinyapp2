@@ -205,7 +205,11 @@ app.post('/urls', (req, res) => {
   let shortU = generateRandomString();
   let newLongURL = req.body.longURL;
   if (!newLongURL) {
-    return res.status(400).send('400 - A URL cannot be blank');
+    return res
+      .status(400)
+      .send(
+        '400 - A URL cannot be blank. Please <a href="/urls/new">try again!</a>'
+      );
   }
   urlDatabase[shortU] = {
     longURL: req.body.longURL,
@@ -262,15 +266,27 @@ app.post('/login', (req, res) => {
   let loginEmail = req.body.email;
   let loginPassword = req.body.password;
   if (!loginEmail || !loginPassword) {
-    return res.status(400).send('400 - Email and password cannot be blank');
+    return res
+      .status(400)
+      .send(
+        '400 - Email and password cannot be blank. Please <a href="/login">try again!</a>'
+      );
   }
   const user = findUserByEmail(loginEmail, users);
   if (!user) {
-    return res.status(400).send('400 - A user with that Email does not exist');
+    return res
+      .status(400)
+      .send(
+        '400 - A user with that Email does not exist. Please <a href="/login">try again!</a>'
+      );
   }
   if (!bcrypt.compareSync(loginPassword, user.password)) {
     // password check bcrypt.compareSync() // true password match, false password not match
-    return res.status(400).send('400 - password does not match');
+    return res
+      .status(400)
+      .send(
+        '400 - password does not match. Please <a href="/login">try again!</a>'
+      );
   }
   let loginId = user.id;
   req.session['user_id'] = loginId; // storing the user id value with cookie session
@@ -289,11 +305,19 @@ app.post('/register', (req, res) => {
   // security for password
 
   if (!registerEmail || !registerPassword) {
-    return res.status(400).send('400 - Email and password cannot be blank');
+    return res
+      .status(400)
+      .send(
+        '400 - Email and password cannot be blank. Please <a href="/register">try again!</a>'
+      );
   }
   const user = findUserByEmail(registerEmail, users);
   if (user) {
-    return res.status(400).send('400 - A user with that email already exists');
+    return res
+      .status(400)
+      .send(
+        '400 - A user with that email already exists. Please <a href="/register">try again!</a>'
+      );
   }
   users[registerId] = {
     // add new user at users DB
